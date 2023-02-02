@@ -24,7 +24,6 @@ inquirer
 });
 
 
-
 })
 
   .catch((error) => {
