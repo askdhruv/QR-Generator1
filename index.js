@@ -1,36 +1,26 @@
-import fs from 'fs';
-import inquirer from 'inquirer';
-import qr from 'qr-image';
+const express = require('express');
+const app = express();
+const qr = require('qr-image');
+const fs = require('fs');
 
-inquirer
-  .prompt([
-    /* Pass your questions in here */{
-        name: "link",
-        message: "What is the link",
-        type: 'input'        
+const port = process.env.PORT || 3000;
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(__dirname)); // Serve the HTML file
+
+app.get('/generateQRCode', (req, res) => {
+    const url = req.query.url;
+
+    if (url) {
+        const qr_png = qr.image(url);
+        res.setHeader('Content-Type', 'image/png');
+        qr_png.pipe(res);
+    } else {
+        res.status(400).send('Invalid URL');
     }
-  ])
-  .then((answers) => {
-    // Use user feedback for... whatever!!
-    const url = answers.link;
-    var qr_png = qr.image(url);
-    qr_png.pipe(fs.createWriteStream("qr-image.png"));
-
-    fs.writeFileSync("link.txt", url, (err) => {
-    if(err)
-        console.log(err);
-    else    
-        console.log("Success");
 });
 
-})
-
-  .catch((error) => {
-    if (error.isTtyError) {
-      // Prompt couldn't be rendered in the current environment
-    } else {
-      // Something else went wrong
-    }
-  });
-
-//Add React frontend
+app.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
+});
