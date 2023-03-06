@@ -7,7 +7,7 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(__dirname)); // Serve the HTML file
+app.use(express.static(__dirname + "./index.html")); // Serve the HTML file
 
 app.get('/generateQRCode', (req, res) => {
     const url = req.query.url;
